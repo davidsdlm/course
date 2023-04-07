@@ -18,14 +18,6 @@ def hello_world():  # put application's code here
 
 
 if __name__:
-    while secret_number is None:
-        r = requests.get(url=URL)
-        if r.headers.get('content-type') == 'application/json':
-            data = r.json()
-            secret_number = data['secret_number']
-
-    app.run(debug=True, use_reloader=True)
-
     redis_password = 'lolkek123'
     redis_host = '65.109.236.1'
     redis_port = 6379
@@ -36,4 +28,12 @@ if __name__:
     port = "5000"
     name = "replica_name"
     init_replica(host, port, name)
+
+    while secret_number is None:
+        r = requests.get(url=URL)
+        if r.headers.get('content-type') == 'application/json':
+            data = r.json()
+            secret_number = data['secret_number']
+
+    app.run()
 #     debug=True, use_reloader=True
