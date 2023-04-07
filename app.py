@@ -12,7 +12,7 @@ app = Flask(__name__)
 secret_number = None
 URL = "https://lab.karpov.courses/hardml-api/module-5/get_secret_number"
 # return_secret_number
-@app.route('/')
+@app.route('/return_secret_number')
 def hello_world():  # put application's code here
     return jsonify(secret_number=secret_number)
 
