@@ -1,4 +1,4 @@
-# pip freeze > requirements.txt
+# pipreqs C:\Users\user\PycharmProjects\flaskProject
 from flask import Flask
 from flask import jsonify
 from first import init_redis, init_replica
@@ -32,8 +32,7 @@ if __name__:
     # 8001 - insight
     init_redis(redis_host, redis_port, redis_password)
 
-    hostname = socket.gethostname()
-    host = socket.gethostbyname(hostname)
+    host = "65.109.236.1"
     port = "5000"
     name = "replica_name"
     init_replica(host, port, name)
