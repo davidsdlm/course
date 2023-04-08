@@ -1,4 +1,6 @@
 # pipreqs C:\Users\user\PycharmProjects\flaskProject
+# $env:PORT=5001
+# $env:REPLICA_NAME="name"
 from flask import Flask
 from flask import jsonify
 from first import init_redis, init_replica
@@ -37,5 +39,5 @@ if __name__ == "__main__":
     name = os.environ['REPLICA_NAME']
     init_replica(host, port, name)
 
-    app.run(port=port)
+    app.run()
 #     debug=True, use_reloader=True
