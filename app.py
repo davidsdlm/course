@@ -18,7 +18,7 @@ def hello_world():  # put application's code here
     return jsonify(secret_number=secret_number)
 
 
-if __name__:
+if __name__ == "__main__":
     while secret_number is None:
         r = requests.get(url=URL)
         if r.headers.get('content-type') == 'application/json':
@@ -32,6 +32,7 @@ if __name__:
     init_redis(redis_host, redis_port, redis_password)
 
     host = "65.109.236.1"
+    # host = os.environ['IP_ADDRESS']
     port = os.environ['PORT']
     name = os.environ['REPLICA_NAME']
     init_replica(host, port, name)
