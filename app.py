@@ -39,5 +39,5 @@ if __name__ == "__main__":
     name = os.environ['REPLICA_NAME']
     init_replica(host, port, name)
 
-    app.run()
+    app.run(host='0.0.0.0')
 #     debug=True, use_reloader=True
