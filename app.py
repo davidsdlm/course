@@ -46,7 +46,6 @@ URL = "https://lab.karpov.courses/hardml-api/module-5/get_secret_number"
 @app.route('/return_secret_number')
 @requests_counter
 def hello_world():
-    time.sleep(10)
     return jsonify(secret_number=secret_number)
 
 
