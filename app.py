@@ -1,16 +1,12 @@
 # pipreqs C:\Users\user\PycharmProjects\flaskProject
-# $env:PORT=5001
-# $env:REPLICA_NAME="name"
-from flask import Flask, request
+from flask import Flask
 from flask import jsonify
 from first import init_redis, close_redis, init_replica, shutdown_scheduler, init_scheduler
-import requests
 import sys
 import signal
 import os
 import time
 import threading
-import asyncio
 
 
 app = Flask(__name__)
@@ -56,18 +52,18 @@ def hello_world():
     return jsonify(secret_number=secret_number)
 
 
-@app.route("/")
-def hello():
-    time.sleep(10)
-    return "none"
+# @app.route("/")
+# def hello():
+#     time.sleep(10)
+#     return "none"
 
 
 if __name__ == "__main__":
-    # while secret_number is None:
-    #     r = requests.get(url=URL)
-    #     if r.headers.get('content-type') == 'application/json':
-    #         data = r.json()
-    #         secret_number = data['secret_number']
+    while secret_number is None:
+        r = requests.get(url=URL)
+        if r.headers.get('content-type') == 'application/json':
+            data = r.json()
+            secret_number = data['secret_number']
 
     # 8001 - insight
     REDIS_HOST = os.environ['REDIS_HOST']
