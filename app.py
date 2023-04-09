@@ -1,22 +1,52 @@
 # pipreqs C:\Users\user\PycharmProjects\flaskProject
 # $env:PORT=5001
 # $env:REPLICA_NAME="name"
-from flask import Flask
+from flask import Flask, request
 from flask import jsonify
-from first import init_redis, init_replica
+from first import init_redis, close_redis, init_replica, shutdown_scheduler, init_scheduler
 import requests
-import socket
+import sys
+import signal
 import os
+import time
 
 
 app = Flask(__name__)
+active_requests = 0
+
+
+def requests_counter(func):
+    def _wrapper(*args, **kwargs):
+        global active_requests
+        active_requests += 1
+        result = func(*args, **kwargs)
+        active_requests -= 1
+        return result
+    return _wrapper
+
+
+def handler(sig, frame):
+    if sig == signal.SIGINT or sig == signal.SIGTERM:
+        shutdown_scheduler()
+        close_redis()
+        while active_requests != 0:
+            time.sleep(0.2)
+        sys.exit(0)
+    sys.exit(0)
+
+
+signal.signal(signal.SIGINT, handler)
+signal.signal(signal.SIGTERM, handler)
 
 
 secret_number = None
 URL = "https://lab.karpov.courses/hardml-api/module-5/get_secret_number"
-# return_secret_number
+
+
 @app.route('/return_secret_number')
-def hello_world():  # put application's code here
+@requests_counter
+def hello_world():
+    time.sleep(10)
     return jsonify(secret_number=secret_number)
 
 
@@ -27,17 +57,27 @@ if __name__ == "__main__":
             data = r.json()
             secret_number = data['secret_number']
 
-    redis_password = 'lolkek123'
-    redis_host = '65.109.236.1'
-    redis_port = 6379
     # 8001 - insight
-    init_redis(redis_host, redis_port, redis_password)
+    REDIS_HOST = os.environ['REDIS_HOST']
+    REDIS_PORT = os.environ['REDIS_PORT']
+    REDIS_PORT = int(REDIS_PORT)
+    REDIS_PASSWORD = os.environ['REDIS_PASSWORD']
 
-    host = "65.109.236.1"
-    # host = os.environ['IP_ADDRESS']
-    port = os.environ['PORT']
-    name = os.environ['REPLICA_NAME']
-    init_replica(host, port, name)
+    SERVICE_DISCOVER_INTERVAL = os.environ['SERVICE_DISCOVER_INTERVAL']
+    SERVICE_DISCOVER_INTERVAL = int(SERVICE_DISCOVER_INTERVAL)
 
-    app.run(host='0.0.0.0', port=port)
+    HOST = os.environ['HOST']
+    PORT = os.environ['PORT']
+    PORT = int(PORT)
+    REPLICA_NAME = os.environ['REPLICA_NAME']
+
+    expire_time = SERVICE_DISCOVER_INTERVAL + 1
+    scheduler_interval = SERVICE_DISCOVER_INTERVAL / 2
+
+    init_redis(REDIS_HOST, REDIS_PORT, REDIS_PASSWORD)
+    init_replica(HOST, PORT, REPLICA_NAME, expire_time)
+    init_scheduler(scheduler_interval, HOST, PORT, REPLICA_NAME, expire_time)
+
+    app.run(host='0.0.0.0', port=5000)
+
 #     debug=True, use_reloader=True
