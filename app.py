@@ -9,6 +9,8 @@ import sys
 import signal
 import os
 import time
+import threading
+import asyncio
 
 
 app = Flask(__name__)
@@ -25,14 +27,19 @@ def requests_counter(func):
     return _wrapper
 
 
+def end_all_connections(pid):
+    while active_requests != 0:
+        time.sleep(0.2)
+    os.kill(pid, signal.SIGKILL)
+
+
 def handler(sig, frame):
     if sig == signal.SIGINT or sig == signal.SIGTERM:
         shutdown_scheduler()
         close_redis()
-        while active_requests != 0:
-            time.sleep(0.2)
+        threading.Timer(SERVICE_DISCOVER_INTERVAL+3, end_all_connections, [os.getpid()]).start()
+    else:
         sys.exit(0)
-    sys.exit(0)
 
 
 signal.signal(signal.SIGINT, handler)
@@ -49,12 +56,18 @@ def hello_world():
     return jsonify(secret_number=secret_number)
 
 
+@app.route("/")
+def hello():
+    time.sleep(10)
+    return "none"
+
+
 if __name__ == "__main__":
-    while secret_number is None:
-        r = requests.get(url=URL)
-        if r.headers.get('content-type') == 'application/json':
-            data = r.json()
-            secret_number = data['secret_number']
+    # while secret_number is None:
+    #     r = requests.get(url=URL)
+    #     if r.headers.get('content-type') == 'application/json':
+    #         data = r.json()
+    #         secret_number = data['secret_number']
 
     # 8001 - insight
     REDIS_HOST = os.environ['REDIS_HOST']
