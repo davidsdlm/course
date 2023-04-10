@@ -54,40 +54,33 @@ def hello_world():
     return jsonify(secret_number=secret_number)
 
 
-# @app.route("/")
-# def hello():
-#     time.sleep(10)
-#     return "none"
+while secret_number is None:
+    r = requests.get(url=URL)
+    if r.headers.get('content-type') == 'application/json':
+        data = r.json()
+        secret_number = data['secret_number']
 
+# 8001 - insight
+REDIS_HOST = os.environ['REDIS_HOST']
+REDIS_PORT = os.environ['REDIS_PORT']
+REDIS_PORT = int(REDIS_PORT)
+REDIS_PASSWORD = os.environ['REDIS_PASSWORD']
 
-if __name__ == "__main__":
-    while secret_number is None:
-        r = requests.get(url=URL)
-        if r.headers.get('content-type') == 'application/json':
-            data = r.json()
-            secret_number = data['secret_number']
+SERVICE_DISCOVER_INTERVAL = os.environ['SERVICE_DISCOVER_INTERVAL']
+SERVICE_DISCOVER_INTERVAL = int(SERVICE_DISCOVER_INTERVAL)
 
-    # 8001 - insight
-    REDIS_HOST = os.environ['REDIS_HOST']
-    REDIS_PORT = os.environ['REDIS_PORT']
-    REDIS_PORT = int(REDIS_PORT)
-    REDIS_PASSWORD = os.environ['REDIS_PASSWORD']
+HOST = os.environ['HOST']
+PORT = os.environ['PORT']
+PORT = int(PORT)
+REPLICA_NAME = os.environ['REPLICA_NAME']
 
-    SERVICE_DISCOVER_INTERVAL = os.environ['SERVICE_DISCOVER_INTERVAL']
-    SERVICE_DISCOVER_INTERVAL = int(SERVICE_DISCOVER_INTERVAL)
+expire_time = SERVICE_DISCOVER_INTERVAL + 1
+scheduler_interval = SERVICE_DISCOVER_INTERVAL / 2
 
-    HOST = os.environ['HOST']
-    PORT = os.environ['PORT']
-    PORT = int(PORT)
-    REPLICA_NAME = os.environ['REPLICA_NAME']
+init_redis(REDIS_HOST, REDIS_PORT, REDIS_PASSWORD)
+init_replica(HOST, PORT, REPLICA_NAME, expire_time)
+init_scheduler(scheduler_interval, HOST, PORT, REPLICA_NAME, expire_time)
 
-    expire_time = SERVICE_DISCOVER_INTERVAL + 1
-    scheduler_interval = SERVICE_DISCOVER_INTERVAL / 2
-
-    init_redis(REDIS_HOST, REDIS_PORT, REDIS_PASSWORD)
-    init_replica(HOST, PORT, REPLICA_NAME, expire_time)
-    init_scheduler(scheduler_interval, HOST, PORT, REPLICA_NAME, expire_time)
-
-    app.run(host='0.0.0.0', port=5000)
+app.run(host='0.0.0.0', port=5000)
 
 #     debug=True, use_reloader=True
