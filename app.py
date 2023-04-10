@@ -81,6 +81,6 @@ init_redis(REDIS_HOST, REDIS_PORT, REDIS_PASSWORD)
 init_replica(HOST, PORT, REPLICA_NAME, expire_time)
 init_scheduler(scheduler_interval, HOST, PORT, REPLICA_NAME, expire_time)
 
-app.run(host='0.0.0.0', port=5000)
+# app.run(host='0.0.0.0', port=5000)
 
 #     debug=True, use_reloader=True
