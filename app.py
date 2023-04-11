@@ -15,6 +15,17 @@ app = Flask(__name__)
 active_requests = 0
 
 
+SECRET_NUMBER = os.environ['SECRET_NUMBER']
+# 8001 - insight
+REDIS_HOST = os.environ['REDIS_HOST']
+REDIS_PORT = os.environ['REDIS_PORT']
+REDIS_PORT = int(REDIS_PORT)
+REDIS_PASSWORD = os.environ['REDIS_PASSWORD']
+
+SERVICE_DISCOVER_INTERVAL = os.environ['SERVICE_DISCOVER_INTERVAL']
+SERVICE_DISCOVER_INTERVAL = int(SERVICE_DISCOVER_INTERVAL)
+
+
 def requests_counter(func):
     def _wrapper(*args, **kwargs):
         global active_requests
@@ -51,18 +62,9 @@ URL = "https://lab.karpov.courses/hardml-api/module-5/get_secret_number"
 @app.route('/return_secret_number')
 @requests_counter
 def hello_world():
-    return SECRET_NUMBER
+    number = json.loads(SECRET_NUMBER)['secret_number']
+    return jsonify(secret_number=number)
 
-
-SECRET_NUMBER = os.environ['SECRET_NUMBER']
-# 8001 - insight
-REDIS_HOST = os.environ['REDIS_HOST']
-REDIS_PORT = os.environ['REDIS_PORT']
-REDIS_PORT = int(REDIS_PORT)
-REDIS_PASSWORD = os.environ['REDIS_PASSWORD']
-
-SERVICE_DISCOVER_INTERVAL = os.environ['SERVICE_DISCOVER_INTERVAL']
-SERVICE_DISCOVER_INTERVAL = int(SERVICE_DISCOVER_INTERVAL)
 
 HOST = os.environ['HOST']
 PORT = os.environ['PORT']
