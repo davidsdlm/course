@@ -50,15 +50,10 @@ URL = "https://lab.karpov.courses/hardml-api/module-5/get_secret_number"
 @app.route('/return_secret_number')
 @requests_counter
 def hello_world():
-    return jsonify(secret_number=secret_number)
+    return jsonify(secret_number=SECRET_NUMBER)
 
 
-while secret_number is None:
-    r = requests.get(url=URL)
-    if r.headers.get('content-type') == 'application/json':
-        data = r.json()
-        secret_number = data['secret_number']
-
+SECRET_NUMBER = os.environ['SECRET_NUMBER']
 # 8001 - insight
 REDIS_HOST = os.environ['REDIS_HOST']
 REDIS_PORT = os.environ['REDIS_PORT']
@@ -80,6 +75,6 @@ init_redis(REDIS_HOST, REDIS_PORT, REDIS_PASSWORD)
 init_replica(HOST, PORT, REPLICA_NAME, expire_time)
 init_scheduler(scheduler_interval, HOST, PORT, REPLICA_NAME, expire_time)
 
-app.run(host='0.0.0.0', port=5000)
+# app.run(host='0.0.0.0', port=5000)
 
 #     debug=True, use_reloader=True
