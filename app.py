@@ -8,6 +8,7 @@ import os
 import time
 import threading
 import requests
+import json
 
 
 app = Flask(__name__)
@@ -50,7 +51,7 @@ URL = "https://lab.karpov.courses/hardml-api/module-5/get_secret_number"
 @app.route('/return_secret_number')
 @requests_counter
 def hello_world():
-    return jsonify(secret_number=SECRET_NUMBER)
+    return SECRET_NUMBER
 
 
 SECRET_NUMBER = os.environ['SECRET_NUMBER']
