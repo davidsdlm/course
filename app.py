@@ -1,5 +1,5 @@
 # pipreqs C:\Users\user\PycharmProjects\flaskProject
-from flask import Flask
+from flask import Flask, request
 from flask import jsonify
 from first import init_redis, close_redis, init_replica, shutdown_scheduler, init_scheduler
 import sys
@@ -15,7 +15,7 @@ app = Flask(__name__)
 active_requests = 0
 
 
-SECRET_NUMBER = os.environ['SECRET_NUMBER']
+SECRET_NUMBER = os.environ.get('SECRET_NUMBER', None)
 # 8001 - insight
 REDIS_HOST = os.environ['REDIS_HOST']
 REDIS_PORT = os.environ['REDIS_PORT']
@@ -59,11 +59,46 @@ secret_number = None
 URL = "https://lab.karpov.courses/hardml-api/module-5/get_secret_number"
 
 
-@app.route('/return_secret_number')
+@app.route('/get_string_iris_pred')
 @requests_counter
 def hello_world():
-    number = json.loads(SECRET_NUMBER)['secret_number']
-    return jsonify(secret_number=number)
+    try:
+        par_1 = float(request.args.get('sepal_length'))
+        par_2 = float(request.args.get('sepal_width'))
+        pred = par_1 * par_2
+        if pred == 0:
+            pred = par_1 + par_2
+        if pred == 0:
+            pred == 1
+
+        threshold_0_1 = json.loads(SECRET_NUMBER)['threshold_0_1']
+        threshold_1_2 = json.loads(SECRET_NUMBER)['threshold_1_2']
+        class_str = None
+        if pred < threshold_0_1:
+            class_str = "setosa"
+        elif threshold_0_1 < pred < threshold_1_2:
+            class_str = "versicolor"
+        elif threshold_1_2 < pred:
+            class_str = "virginica"
+
+        return jsonify({"class": pred, "class_str": class_str, "threshold_0_1": threshold_0_1, "threshold_1_2":threshold_1_2})
+    except:
+        return "501"
+
+
+@app.route('/get_source_iris_pred')
+def rmodel_first():
+    try:
+        par_1 = float(request.args.get('sepal_length'))
+        par_2 = float(request.args.get('sepal_width'))
+        pred = par_1 * par_2
+        if pred == 0:
+            pred = par_1 + par_2
+        if pred == 0:
+            pred == 1
+        return jsonify({"prediction": pred})
+    except:
+        return "error"
 
 
 HOST = os.environ['HOST']
@@ -80,4 +115,4 @@ init_scheduler(scheduler_interval, HOST, PORT, REPLICA_NAME, expire_time)
 
 # app.run(host='0.0.0.0', port=5000)
 
-#     debug=True, use_reloader=True
+    # debug=True, use_reloader=True
