@@ -1,5 +1,6 @@
 # pipreqs C:\Users\user\PycharmProjects\flaskProject
 from flask import Flask, request
+from flask import Response
 from flask import jsonify
 from first import init_redis, close_redis, init_replica, shutdown_scheduler, init_scheduler
 import sys
@@ -83,7 +84,7 @@ def hello_world():
 
         return jsonify({"class": pred, "class_str": class_str, "threshold_0_1": threshold_0_1, "threshold_1_2":threshold_1_2})
     except:
-        return "501"
+        return "501", 501
 
 
 @app.route('/get_source_iris_pred')
